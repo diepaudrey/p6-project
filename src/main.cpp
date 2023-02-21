@@ -1,6 +1,10 @@
-#include <stdlib.h>
+// #include <stdlib.h>
+#include <cstdlib>
 #include "p6/p6.h"
+
 #define DOCTEST_CONFIG_IMPLEMENT
+#include <vector>
+#include "boid.hpp"
 #include "doctest/doctest.h"
 
 int main(int argc, char* argv[])
@@ -15,16 +19,54 @@ int main(int argc, char* argv[])
     }
 
     // Actual app
-    auto ctx = p6::Context{{.title = "Simple-p6-Setup"}};
+    auto ctx = p6::Context{{.title = "p6-project"}};
     ctx.maximize_window();
+
+    // Variable declaration
+    // p6::Angle rotation = 0.011_turn;
+
+    // Initialize a boid
+    glm::vec2 p(0, 0);
+    glm::vec2 v(1, 1);
+    Boid      b1(p, v);
+
+    std::vector<Boid> boids;
+    int               nb_boids = 10;
+
+    for (int i = 0; i < nb_boids; i++)
+    {
+        glm::vec2 pos = p6::random::point(ctx);
+        glm::vec2 dir = p6::random::point(ctx);
+        Boid      boid(pos, dir);
+        boids.push_back(boid);
+    }
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
         ctx.background(p6::NamedColor::Blue);
-        ctx.circle(
-            p6::Center{ctx.mouse()},
-            p6::Radius{0.2f}
-        );
+
+        for (size_t i = 0; i < boids.size(); i++)
+        {
+            boids[i].draw(ctx);
+            // update the boid's position
+            boids[i].update();
+            std::cout << boids[i].isOutWindow(ctx) << std::endl;
+        }
+
+        // for (unsigned i = 0; i < 10; i++)
+        // {
+        //     ctx.square(
+        //         p6::TopLeftCorner{p6::random::point(ctx)},
+        //         p6::Radius{0.1f},
+        //         p6::Rotation{rotation}
+        //     );
+
+        //     ctx.rectangle(
+        //         p6::TopLeftCorner{p6::random::point(ctx)},
+        //         p6::Radii{glm::vec2(0.1f, 0.2f)},
+        //         p6::Rotation{rotation}
+        //     );
+        // }
     };
 
     // Should be done last. It starts the infinite loop.
