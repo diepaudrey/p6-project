@@ -43,14 +43,13 @@ int main(int argc, char* argv[])
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        ctx.background(p6::NamedColor::Blue);
+        ctx.background(p6::NamedColor::PastelBlue);
 
         for (size_t i = 0; i < boids.size(); i++)
         {
             boids[i].draw(ctx);
-            // update the boid's position
-            boids[i].update();
-            std::cout << boids[i].isOutWindow(ctx) << std::endl;
+            boids[i].update(ctx);
+            boids[i].updateDirection(ctx);
         }
 
         // for (unsigned i = 0; i < 10; i++)

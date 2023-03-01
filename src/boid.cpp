@@ -2,18 +2,26 @@
 
 void Boid::draw(p6::Context& ctx)
 {
-    // p6::Point2D p1(this->position.x, 0.2f);
-    // p6::Point2D p2(this->position.x + 0.2f, this->position.y - 0.2f);
-    // p6::Point2D p3(this->position.x - 0.2f, this->position.y - 0.2f);
-
     ctx.equilateral_triangle(
         p6::Center{this->position},
-        p6::Radius{0.2f},
+        p6::Radius{0.f},
         p6::Rotation{this->direction}
     );
 }
 
-bool Boid::isOutWindow(p6::Context& ctx) const
+bool Boid::isOutWindow(p6::Context& ctx)
 {
     return this->position.x > ctx.aspect_ratio() || this->position.y > ctx.aspect_ratio() || this->position.x < -ctx.aspect_ratio() || this->position.y < -ctx.aspect_ratio();
+}
+
+void Boid::updateDirection(p6::Context& ctx)
+{
+    if (this->isOutWindow(ctx) == true)
+    {
+        this->direction = -(this->direction);
+    }
+    else
+    {
+        this->direction += 0.01f;
+    }
 }
