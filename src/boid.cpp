@@ -12,7 +12,7 @@ void Boid::draw(p6::Context& ctx)
     ctx.equilateral_triangle(
         p6::Center{this->position},
         p6::Radius{0.1f},
-        p6::Rotation{this->direction}
+        p6::Rotation{this->speed}
     );
 }
 
@@ -25,7 +25,7 @@ void Boid::updateDirectionBorders(const p6::Context& ctx)
 {
     if (this->isOutWindow(ctx))
     {
-        this->direction = -(this->direction);
+        this->speed = -(this->speed);
     }
 }
 
@@ -71,8 +71,8 @@ void Boid::separation(const std::vector<Boid>& boids)
         }
     }
 
-    this->direction += force * this->separationStrength;
-    this->direction = normalize(this->direction);
+    this->speed += force * this->separationStrength;
+    this->speed = normalize(this->speed);
 }
 
 void Boid::alignment(const std::vector<Boid>& boids)
@@ -114,7 +114,7 @@ glm::vec2 Boid::calculateAlignmentForce(const std::vector<Boid>& neighbors)
     glm::vec2 averageDirection;
     for (const auto& boid : neighbors)
     {
-        averageDirection += boid.direction;
+        averageDirection += boid.speed;
     }
     if (!neighbors.empty())
     {
@@ -142,10 +142,10 @@ glm::vec2 Boid::calculateCohesionForce(const std::vector<Boid>& neighbors)
 
 void Boid::applySteeringForce()
 {
-    this->direction += this->alignmentStrength * calculateAlignmentForce(this->neighbors);
+    this->speed += this->alignmentStrength * calculateAlignmentForce(this->neighbors);
     // this->direction += this->separationStrength * calculateSeparationForce(this->neighbors);
     // this->direction += this->cohesionStrength * (calculateCohesionForce(this->neighbors) - this->position);
-    this->direction = normalize(this->direction);
+    this->speed = normalize(this->speed);
 }
 
 //  glm::vec2 totalForce;

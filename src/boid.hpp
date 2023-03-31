@@ -7,7 +7,6 @@
 class Boid {
 private:
     glm::vec2 position;
-    glm::vec2 direction;
     glm::vec2 speed;
 
     std::vector<Boid> neighbors;
@@ -20,8 +19,8 @@ private:
 
 public:
     Boid(){};
-    Boid(const glm::vec2& pos, const glm::vec2& dir, const glm::vec2 vel)
-        : position(pos), direction(dir), speed(vel){};
+    Boid(const glm::vec2& pos, const glm::vec2 vel)
+        : position(pos), speed(vel){};
 
     /*Setters*/
     void setProtectedRadius(const float& protectedRadius)
@@ -79,7 +78,7 @@ public:
     {
         this->neighbors = fillNeighbors(boids, ctx);
 
-        this->position += ctx.delta_time() * this->speed * this->direction;
+        this->position += ctx.delta_time() * this->speed;
 
         separation(boids);
         // alignment(boids);

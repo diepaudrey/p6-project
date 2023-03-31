@@ -35,14 +35,12 @@ int main(int argc, char* argv[])
     float separationStrength = 2.f;
     float alignmentStrength  = 0.1f;
     float cohesionStrength   = 0.1f;
-    // float speed              = 0.9f;
 
     for (int i = 0; i < nb_boids; i++)
     {
         glm::vec2 pos   = p6::random::point(ctx);
-        glm::vec2 dir   = p6::random::direction();
-        glm::vec2 speed = p6::random::point(ctx);
-        Boid      boid(pos, dir, speed);
+        glm::vec2 speed = p6::random::direction();
+        Boid      boid(pos, speed);
 
         boids.push_back(boid);
     }
