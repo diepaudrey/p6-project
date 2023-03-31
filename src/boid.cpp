@@ -75,78 +75,59 @@ void Boid::separation(const std::vector<Boid>& boids)
     this->speed = normalize(this->speed);
 }
 
-void Boid::alignment(const std::vector<Boid>& boids)
+glm::vec2 Boid::alignment()
 {
-    glm::vec2 averageVelocity(0.f, 0.f);
-    int       numberOfNeighbors = 0;
+    glm::vec2 averageDirection(0.f, 0.f);
 
-    for (const auto& boid : boids)
+    for (const auto& boid : this->neighbors)
     {
         if (isTooClose(boid, this->visibleRange))
         {
-            averageVelocity += boid.speed;
-            numberOfNeighbors++;
+            averageDirection += boid.speed;
         }
     }
 
-    if (numberOfNeighbors > 0)
+    if (!this->neighbors.empty())
     {
-        averageVelocity /= numberOfNeighbors;
+        averageDirection /= this->neighbors.size();
+        // averageDirection -= this->speed;
     }
-
-    this->speed = (averageVelocity - this->speed) * this->alignmentStrength;
-}
-
-glm::vec2 Boid::calculateSeparationForce(const std::vector<Boid>& neighbors)
-{
-    glm::vec2 totalForce;
-
-    for (const auto& boid : neighbors)
-    {
-        totalForce += (this->position - boid.position) / glm ::distance(boid.position, this->position);
-    }
-
-    return totalForce;
-}
-
-glm::vec2 Boid::calculateAlignmentForce(const std::vector<Boid>& neighbors)
-{
-    glm::vec2 averageDirection;
-    for (const auto& boid : neighbors)
-    {
-        averageDirection += boid.speed;
-    }
-    if (!neighbors.empty())
-    {
-        averageDirection /= neighbors.size();
-        averageDirection = normalize(averageDirection);
-    }
-    // std::cout << "Average direction : " << averageDirection.x << " " << averageDirection.y << std::endl;
     return averageDirection;
-}
-
-glm::vec2 Boid::calculateCohesionForce(const std::vector<Boid>& neighbors)
-{
-    glm::vec2 averagePosition;
-    for (const auto& boid : neighbors)
-    {
-        averagePosition += boid.position;
-    }
-    if (!neighbors.empty())
-    {
-        averagePosition /= neighbors.size();
-    }
-    averagePosition = normalize(averagePosition);
-    return averagePosition;
 }
 
 void Boid::applySteeringForce()
 {
-    this->speed += this->alignmentStrength * calculateAlignmentForce(this->neighbors);
-    // this->direction += this->separationStrength * calculateSeparationForce(this->neighbors);
-    // this->direction += this->cohesionStrength * (calculateCohesionForce(this->neighbors) - this->position);
-    this->speed = normalize(this->speed);
+    this->speed += this->alignmentStrength * alignment();
+    this->setMaxSpeed(this->maxSpeed);
 }
+
+// glm::vec2 Boid::calculateSeparationForce(const std::vector<Boid>& neighbors)
+// {
+//     glm::vec2 totalForce;
+
+//     for (const auto& boid : neighbors)
+//     {
+//         totalForce += (this->position - boid.position) / glm ::distance(boid.position, this->position);
+//     }
+
+//     return totalForce;
+// }
+
+// glm::vec2 Boid::calculateAlignmentForce(const std::vector<Boid>& neighbors)
+// {
+//     glm::vec2 averageDirection;
+//     for (const auto& boid : neighbors)
+//     {
+//         averageDirection += boid.speed;
+//     }
+//     if (!neighbors.empty())
+//     {
+//         averageDirection /= neighbors.size();
+//         averageDirection = normalize(averageDirection);
+//     }
+//     // std::cout << "Average direction : " << averageDirection.x << " " << averageDirection.y << std::endl;
+//     return averageDirection;
+// }
 
 //  glm::vec2 totalForce;
 //     for (auto& boid : neighbors)

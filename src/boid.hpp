@@ -9,6 +9,8 @@ private:
     glm::vec2 position;
     glm::vec2 speed;
 
+    float maxSpeed = 1.2f;
+
     std::vector<Boid> neighbors;
 
     float protectedRadius;
@@ -48,6 +50,22 @@ public:
         this->speed = glm::vec2(velocity, velocity);
     }
 
+    static void setMaxSpeed(glm::vec2 vec, const float& maxSpeed)
+    {
+        if (glm::length(vec) > maxSpeed)
+        {
+            vec = glm::normalize(vec) * maxSpeed;
+        }
+    }
+
+    void setMaxSpeed(const float& maxSpeed)
+    {
+        if (glm::length(this->speed) > maxSpeed)
+        {
+            this->speed = glm::normalize(this->speed) * maxSpeed;
+        }
+    }
+
     // draw the boid
     void draw(p6::Context& ctx);
 
@@ -68,8 +86,8 @@ public:
     static glm::vec2 calculateAlignmentForce(const std::vector<Boid>& neighbors);
     static glm::vec2 calculateCohesionForce(const std::vector<Boid>& neighbors);
 
-    void separation(const std::vector<Boid>& boid);
-    void alignment(const std::vector<Boid>& boid);
+    void      separation(const std::vector<Boid>& boid);
+    glm::vec2 alignment();
 
     // apply the 3 rules(separation, alignment, cohesion)
     void applySteeringForce();
@@ -80,10 +98,10 @@ public:
 
         this->position += ctx.delta_time() * this->speed;
 
-        separation(boids);
-        // alignment(boids);
-        //  applySteeringForce();
+        // separation(boids);
+        applySteeringForce();
 
+        // std::cout << this->speed.x << " " << this->speed.y << std::endl;
         updateDirectionBorders(ctx);
         draw(ctx);
 

@@ -39,7 +39,7 @@ int main(int argc, char* argv[])
     for (int i = 0; i < nb_boids; i++)
     {
         glm::vec2 pos   = p6::random::point(ctx);
-        glm::vec2 speed = p6::random::direction();
+        glm::vec2 speed = pos + p6::random::point(ctx);
         Boid      boid(pos, speed);
 
         boids.push_back(boid);
@@ -51,7 +51,7 @@ int main(int argc, char* argv[])
         ImGui::Begin("Settings");
         ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
         ImGui::SliderFloat("separationStrength", &separationStrength, 0.f, 15.f);
-        ImGui::SliderFloat("alignmentStrength", &alignmentStrength, 0.f, 15.f);
+        ImGui::SliderFloat("alignmentStrength", &alignmentStrength, 0.f, 1.f);
         ImGui::SliderFloat("cohesionStrength", &cohesionStrength, 0.f, 15.f);
         // ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
         ImGui::End();
