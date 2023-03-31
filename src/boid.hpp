@@ -13,9 +13,10 @@ private:
 
     std::vector<Boid> neighbors;
 
-    float turnfactor = 0.15f;
-    float protectedRadius;
+    float turnfactor   = 0.2f;
     float visibleRange = 0.2f;
+
+    float protectedRadius;
     float separationStrength;
     float alignmentStrength;
     float cohesionStrength;
@@ -90,10 +91,11 @@ public:
     static glm::vec2 calculateCohesionForce(const std::vector<Boid>& neighbors);
 
     void      separation(const std::vector<Boid>& boid);
-    glm::vec2 alignment();
+    glm::vec2 alignment(const std::vector<Boid>& boids);
+    glm::vec2 cohesion(const std::vector<Boid>& boids);
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForce();
+    void applySteeringForce(const std::vector<Boid>& boids);
 
     void update(p6::Context& ctx, const std::vector<Boid>& boids)
     {
@@ -102,11 +104,11 @@ public:
         this->position += ctx.delta_time() * this->speed;
 
         // separation(boids);
-        applySteeringForce();
+        applySteeringForce(boids);
 
         // std::cout << this->speed.x << " " << this->speed.y << std::endl;
         // updateDirectionBorders(ctx);
-        avoidEdges(ctx, this->turnfactor);
+        avoidEdges(ctx, turnfactor);
         draw(ctx);
 
         this->neighbors.clear();

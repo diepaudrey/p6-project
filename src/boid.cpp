@@ -5,15 +5,16 @@ void Boid::draw(p6::Context& ctx)
 {
     ctx.circle(this->position, this->protectedRadius);
     ctx.fill = {0.f, 1.f, 0.f, 0.3f};
-
     // ctx.circle(this->position, this->visibleRange);
     // ctx.fill = {0.f, 1.f, 0.f, 0.4f};
 
     ctx.equilateral_triangle(
         p6::Center{this->position},
-        p6::Radius{0.1f},
+        p6::Radius{0.05f},
         p6::Rotation{this->speed}
     );
+
+    ctx.use_stroke = false;
 }
 
 bool Boid::isOutWindow(const p6::Context& ctx) const
@@ -31,6 +32,7 @@ void Boid::updateDirectionBorders(const p6::Context& ctx)
 
 void Boid::avoidEdges(const p6::Context& ctx, const float& turnfactor)
 {
+    // pas opti pour la 3D
     if (this->position.x + this->protectedRadius > ctx.aspect_ratio())
     {
         this->speed.x -= turnfactor;
@@ -88,7 +90,7 @@ void Boid::separation(const std::vector<Boid>& boids)
     {
         if (isTooClose(boid, this->visibleRange))
         {
-            force += (this->position - boid.position);
+            force += (this->position - boid.position) / glm::distance(this->position, boid.position);
         }
     }
 
@@ -96,28 +98,56 @@ void Boid::separation(const std::vector<Boid>& boids)
     this->speed = normalize(this->speed);
 }
 
-glm::vec2 Boid::alignment()
+glm::vec2 Boid::alignment(const std::vector<Boid>& boids)
 {
     glm::vec2 averageDirection(0.f, 0.f);
+    float     alignmentRange    = 0.2f;
+    int       numberOfNeighbors = 0;
 
-    for (const auto& boid : this->neighbors)
+    for (const auto& boid : boids)
     {
-        if (isTooClose(boid, this->visibleRange))
+        if (isTooClose(boid, alignmentRange))
         {
             averageDirection += boid.speed;
+            numberOfNeighbors++;
         }
     }
 
-    if (!this->neighbors.empty())
+    if (numberOfNeighbors != 0)
     {
-        averageDirection /= this->neighbors.size();
+        averageDirection *= alignmentStrength;
+        averageDirection /= numberOfNeighbors;
     }
     return averageDirection;
 }
 
-void Boid::applySteeringForce()
+glm::vec2 Boid::cohesion(const std::vector<Boid>& boids)
 {
-    this->speed += this->alignmentStrength * alignment();
+    glm::vec2 averageLocation(0.f, 0.f);
+    float     cohesionRange     = 0.5f;
+    int       numberOfNeighbors = 0;
+
+    for (const auto& boid : boids)
+    {
+        if (isTooClose(boid, cohesionRange))
+        {
+            averageLocation += boid.position;
+            numberOfNeighbors++;
+        }
+    }
+
+    if (numberOfNeighbors != 0)
+    {
+        averageLocation /= numberOfNeighbors;
+    }
+
+    return averageLocation;
+}
+
+void Boid::applySteeringForce(const std::vector<Boid>& boids)
+{
+    // this->speed += alignment(boids);
+    this->speed += (cohesion(boids) - this->position) * cohesionStrength;
     this->setMaxSpeed(this->maxSpeed);
 }
 

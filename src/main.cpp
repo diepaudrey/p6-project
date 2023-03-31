@@ -24,10 +24,6 @@ int main(int argc, char* argv[])
 
     // Variable declaration
 
-    // Initialize a boid
-    // glm::vec2 p(0, 0);
-    // glm::vec2 v(1, 1);
-
     std::vector<Boid> boids;
     int               nb_boids = 25;
 
@@ -50,13 +46,13 @@ int main(int argc, char* argv[])
         /*Dear ImGui*/
         ImGui::Begin("Settings");
         ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
-        ImGui::SliderFloat("separationStrength", &separationStrength, 0.f, 15.f);
+        ImGui::SliderFloat("separationStrength", &separationStrength, 0.f, 1.f);
         ImGui::SliderFloat("alignmentStrength", &alignmentStrength, 0.f, 1.f);
-        ImGui::SliderFloat("cohesionStrength", &cohesionStrength, 0.f, 15.f);
+        ImGui::SliderFloat("cohesionStrength", &cohesionStrength, 0.f, 1.f);
         // ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
         ImGui::End();
 
-        ctx.background(p6::NamedColor::PastelBlue);
+        ctx.background(p6::NamedColor::DavySGrey);
 
         // for (size_t i = 0; i < boids.size(); i++)
         // {
