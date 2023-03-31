@@ -29,6 +29,27 @@ void Boid::updateDirectionBorders(const p6::Context& ctx)
     }
 }
 
+void Boid::avoidEdges(const p6::Context& ctx, const float& turnfactor)
+{
+    if (this->position.x + this->protectedRadius > ctx.aspect_ratio())
+    {
+        this->speed.x -= turnfactor;
+    }
+    if (this->position.x - this->protectedRadius < -ctx.aspect_ratio())
+    {
+        this->speed.x += turnfactor;
+    }
+
+    if (this->position.y + this->protectedRadius > ctx.inverse_aspect_ratio() * 2)
+    {
+        this->speed.y -= turnfactor;
+    }
+    if (this->position.y - this->protectedRadius < -ctx.inverse_aspect_ratio() * 2)
+    {
+        this->speed.y += turnfactor;
+    }
+}
+
 bool Boid::isTooClose(const Boid& boid, const float& radius) const
 {
     return glm::distance(boid.position, this->position) < radius && glm::distance(boid.position, this->position) != 0;
@@ -90,7 +111,6 @@ glm::vec2 Boid::alignment()
     if (!this->neighbors.empty())
     {
         averageDirection /= this->neighbors.size();
-        // averageDirection -= this->speed;
     }
     return averageDirection;
 }

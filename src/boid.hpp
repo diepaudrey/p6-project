@@ -13,6 +13,7 @@ private:
 
     std::vector<Boid> neighbors;
 
+    float turnfactor = 0.15f;
     float protectedRadius;
     float visibleRange = 0.2f;
     float separationStrength;
@@ -74,6 +75,8 @@ public:
     // update the direction if the boid is out of the window
     void updateDirectionBorders(const p6::Context& ctx);
 
+    void avoidEdges(const p6::Context& ctx, const float& turnfactor);
+
     // check distance between this boid and the boid in argument
     bool isTooClose(const Boid& boid, const float& radius) const;
     // fill a vector of the neighbor
@@ -102,7 +105,8 @@ public:
         applySteeringForce();
 
         // std::cout << this->speed.x << " " << this->speed.y << std::endl;
-        updateDirectionBorders(ctx);
+        // updateDirectionBorders(ctx);
+        avoidEdges(ctx, this->turnfactor);
         draw(ctx);
 
         this->neighbors.clear();
