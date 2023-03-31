@@ -5,6 +5,10 @@ void Boid::draw(p6::Context& ctx)
 {
     ctx.circle(this->position, this->protectedRadius);
     ctx.fill = {0.f, 1.f, 0.f, 0.3f};
+
+    // ctx.circle(this->position, this->visibleRange);
+    // ctx.fill = {0.f, 1.f, 0.f, 0.4f};
+
     ctx.equilateral_triangle(
         p6::Center{this->position},
         p6::Radius{0.1f},
@@ -25,9 +29,9 @@ void Boid::updateDirectionBorders(const p6::Context& ctx)
     }
 }
 
-bool Boid::isTooClose(const Boid& boid) const
+bool Boid::isTooClose(const Boid& boid, const float& radius) const
 {
-    return glm::distance(boid.position, this->position) < this->protectedRadius && glm::distance(boid.position, this->position) != 0;
+    return glm::distance(boid.position, this->position) < radius && glm::distance(boid.position, this->position) != 0;
 }
 
 std::vector<Boid> Boid::fillNeighbors(const std::vector<Boid>& boids, p6::Context& ctx) const
@@ -35,7 +39,7 @@ std::vector<Boid> Boid::fillNeighbors(const std::vector<Boid>& boids, p6::Contex
     std::vector<Boid> neighbors;
     for (const auto& boid : boids)
     {
-        if (this->isTooClose(boid))
+        if (this->isTooClose(boid, this->protectedRadius))
         {
             neighbors.push_back(boid);
             drawCollision(neighbors, ctx);
@@ -61,7 +65,7 @@ void Boid::separation(const std::vector<Boid>& boids)
 
     for (const auto& boid : boids)
     {
-        if (isTooClose(boid))
+        if (isTooClose(boid, this->visibleRange))
         {
             force += (this->position - boid.position);
         }
@@ -78,7 +82,7 @@ void Boid::alignment(const std::vector<Boid>& boids)
 
     for (const auto& boid : boids)
     {
-        if (isTooClose(boid))
+        if (isTooClose(boid, this->visibleRange))
         {
             averageVelocity += boid.speed;
             numberOfNeighbors++;
@@ -90,7 +94,7 @@ void Boid::alignment(const std::vector<Boid>& boids)
         averageVelocity /= numberOfNeighbors;
     }
 
-    this->speed += (averageVelocity - this->speed) * this->alignmentStrength;
+    this->speed = (averageVelocity - this->speed) * this->alignmentStrength;
 }
 
 glm::vec2 Boid::calculateSeparationForce(const std::vector<Boid>& neighbors)

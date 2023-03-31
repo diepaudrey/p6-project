@@ -13,6 +13,7 @@ private:
     std::vector<Boid> neighbors;
 
     float protectedRadius;
+    float visibleRange = 0.2f;
     float separationStrength;
     float alignmentStrength;
     float cohesionStrength;
@@ -57,7 +58,7 @@ public:
     void updateDirectionBorders(const p6::Context& ctx);
 
     // check distance between this boid and the boid in argument
-    bool isTooClose(const Boid& boid) const;
+    bool isTooClose(const Boid& boid, const float& radius) const;
     // fill a vector of the neighbor
     std::vector<Boid> fillNeighbors(const std::vector<Boid>& boids, p6::Context& ctx) const;
     // use to draw a red circle when boids are too close
@@ -80,8 +81,8 @@ public:
 
         this->position += ctx.delta_time() * this->speed * this->direction;
 
-        // separation(boids);
-        alignment(boids);
+        separation(boids);
+        // alignment(boids);
         //  applySteeringForce();
 
         updateDirectionBorders(ctx);
