@@ -23,49 +23,58 @@ int main(int argc, char* argv[])
     ctx.maximize_window();
 
     // Variable declaration
-    // p6::Angle rotation = 0.011_turn;
 
     // Initialize a boid
-    glm::vec2 p(0, 0);
-    glm::vec2 v(1, 1);
-    Boid      b1(p, v);
+    // glm::vec2 p(0, 0);
+    // glm::vec2 v(1, 1);
 
     std::vector<Boid> boids;
-    int               nb_boids = 10;
+    int               nb_boids = 25;
+
+    float protectedRadius    = 0.1f;
+    float separationStrength = 2.f;
+    float alignmentStrength  = 0.1f;
+    float cohesionStrength   = 0.1f;
+    // float speed              = 0.9f;
 
     for (int i = 0; i < nb_boids; i++)
     {
-        glm::vec2 pos = p6::random::point(ctx);
-        glm::vec2 dir = p6::random::point(ctx);
-        Boid      boid(pos, dir);
+        glm::vec2 pos   = p6::random::point(ctx);
+        glm::vec2 dir   = p6::random::direction();
+        glm::vec2 speed = p6::random::point(ctx);
+        Boid      boid(pos, dir, speed);
+
         boids.push_back(boid);
     }
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
+        /*Dear ImGui*/
+        ImGui::Begin("Settings");
+        ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
+        ImGui::SliderFloat("separationStrength", &separationStrength, 0.f, 15.f);
+        ImGui::SliderFloat("alignmentStrength", &alignmentStrength, 0.f, 15.f);
+        ImGui::SliderFloat("cohesionStrength", &cohesionStrength, 0.f, 15.f);
+        // ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
+        ImGui::End();
+
         ctx.background(p6::NamedColor::PastelBlue);
 
-        for (size_t i = 0; i < boids.size(); i++)
-        {
-            boids[i].draw(ctx);
-            boids[i].update(ctx);
-            boids[i].updateDirection(ctx);
-        }
-
-        // for (unsigned i = 0; i < 10; i++)
+        // for (size_t i = 0; i < boids.size(); i++)
         // {
-        //     ctx.square(
-        //         p6::TopLeftCorner{p6::random::point(ctx)},
-        //         p6::Radius{0.1f},
-        //         p6::Rotation{rotation}
-        //     );
-
-        //     ctx.rectangle(
-        //         p6::TopLeftCorner{p6::random::point(ctx)},
-        //         p6::Radii{glm::vec2(0.1f, 0.2f)},
-        //         p6::Rotation{rotation}
-        //     );
+        //     boids[i].update(ctx, boids);
         // }
+
+        for (auto& boid : boids)
+        {
+            boid.setProtectedRadius(protectedRadius);
+            boid.setAlignmentStrength(alignmentStrength);
+            boid.setCohesionStrength(cohesionStrength);
+            boid.setSeparationStrength(separationStrength);
+            // boid.setSpeed(speed);
+
+            boid.update(ctx, boids);
+        }
     };
 
     // Should be done last. It starts the infinite loop.
