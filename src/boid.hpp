@@ -90,7 +90,7 @@ public:
     static glm::vec2 calculateAlignmentForce(const std::vector<Boid>& neighbors);
     static glm::vec2 calculateCohesionForce(const std::vector<Boid>& neighbors);
 
-    void      separation(const std::vector<Boid>& boid);
+    glm::vec2 separation(const std::vector<Boid>& boid);
     glm::vec2 alignment(const std::vector<Boid>& boids);
     glm::vec2 cohesion(const std::vector<Boid>& boids);
 
