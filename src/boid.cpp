@@ -1,5 +1,6 @@
 #include "boid.hpp"
 #include <vcruntime.h>
+#include <iterator>
 
 void Boid::draw(p6::Context& ctx)
 {
@@ -84,31 +85,33 @@ void Boid::drawCollision(const std::vector<Boid>& neighbors, p6::Context& ctx)
 
 glm::vec2 Boid::separation(const std::vector<Boid>& boids)
 {
-    glm::vec2   force(0.f, 0.f);
-    const float separationRange   = 0.08f;
-    int         numberOfNeighbors = 0;
+    glm::vec2 force(0.f, 0.f);
+    // const float separationRange   = 0.15f;
+    int numberOfNeighbors = 0;
 
     for (const auto& boid : boids)
     {
-        if (isTooClose(boid, separationRange))
+        if (isTooClose(boid, visibleRange))
+
         {
+            // std::cout << glm::distance(this->position, boid.position) << std::endl;
             force += (this->position - boid.position) / glm::distance(this->position, boid.position);
+
             numberOfNeighbors++;
         }
 
         if (numberOfNeighbors != 0)
         {
             force /= numberOfNeighbors;
+            force = normalize(force);
             force *= separationStrength;
         }
     }
 
     return force;
-    // this->speed += force * this->separationStrength;
-    // this->speed = normalize(this->speed);
 }
 
-glm::vec2 Boid::alignment(const std::vector<Boid>& boids)
+glm::vec2 Boid::alignment(const std::vector<Boid>& boids) const
 {
     glm::vec2 averageDirection(0.f, 0.f);
     float     alignmentRange    = 0.2f;
@@ -158,7 +161,6 @@ glm::vec2 Boid::cohesion(const std::vector<Boid>& boids)
 void Boid::applySteeringForce(const std::vector<Boid>& boids)
 {
     this->speed += alignment(boids);
-    // this->speed += (cohesion(boids) - this->position) * cohesionStrength;
     this->speed += cohesion(boids);
     this->speed += separation(boids);
     this->setMaxSpeed(this->maxSpeed);

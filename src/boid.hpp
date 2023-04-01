@@ -22,7 +22,7 @@ private:
     float cohesionStrength;
 
 public:
-    Boid(){};
+    Boid() = default;
     Boid(const glm::vec2& pos, const glm::vec2 vel)
         : position(pos), speed(vel){};
 
@@ -91,7 +91,7 @@ public:
     static glm::vec2 calculateCohesionForce(const std::vector<Boid>& neighbors);
 
     glm::vec2 separation(const std::vector<Boid>& boid);
-    glm::vec2 alignment(const std::vector<Boid>& boids);
+    glm::vec2 alignment(const std::vector<Boid>& boids) const;
     glm::vec2 cohesion(const std::vector<Boid>& boids);
 
     // apply the 3 rules(separation, alignment, cohesion)
