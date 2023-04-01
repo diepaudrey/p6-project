@@ -1,31 +1,40 @@
 #pragma once
 #include <cstdlib>
 #include <vector>
+#include "Boid.hpp"
 #include "doctest/doctest.h"
 #include "p6/p6.h"
 
 class Boids {
 private:
     /*Attributes*/
-    glm::vec2 m_position;
-    glm::vec2 m_speed;
+    std::vector<Boid> m_boids;
+    int               m_numBoids;
+
+    // glm::vec2 m_position;
+    // glm::vec2 m_speed;
 
     /*ImGui variables*/
-    float protectedRadius;
+    // float protectedRadius;
     float separationStrength;
     float alignmentStrength;
     float cohesionStrength;
-    float maxSpeed;
 
 public:
     Boids() = default;
-    Boids(const glm::vec2& pos, const glm::vec2 vel)
-        : m_position(pos), m_speed(vel){};
+
+    Boids(const std::vector<Boid>& boids, const int& numBoids)
+        : m_boids(boids), m_numBoids(numBoids){};
+
+    void fillBoids(p6::Context& ctx);
 
     /*Setters for ImGui*/
     void setProtectedRadius(const float& protecRad)
     {
-        this->protectedRadius = protecRad;
+        for (auto& boid : m_boids)
+        {
+            boid.protectedRadius = protecRad;
+        }
     }
 
     void setSeparationStrength(const float& separation)
@@ -43,49 +52,51 @@ public:
         this->cohesionStrength = cohesion;
     }
 
-    void setMaxSpeed(const float& speed)
+    void setMaxSpeed(const float& maxSpeed)
     {
-        this->maxSpeed = speed;
-    }
-
-    // limit the speed
-    void limitSpeed()
-    {
-        if (glm::length(m_speed) > maxSpeed)
+        for (auto& boid : m_boids)
         {
-            m_speed = glm::normalize(m_speed) * maxSpeed;
+            boid.maxSpeed = maxSpeed;
         }
     }
 
     // draw the boid
-    void draw(p6::Context& ctx);
+    void drawBoids(p6::Context& ctx);
 
     // Help the boids to avoid edges
-    void avoidEdges(const p6::Context& ctx, const float& turnfactor);
+    void avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor);
 
     // check distance between this boid and the boid in argument
-    bool isTooClose(const Boids& boid, const float& radius) const;
+    static bool isTooClose(const Boid& boid1, const Boid& boid2, const float& radius);
     // fill a vector of the neighbor
+    std::vector<Boid> fillNeighbors(const Boid& boid, p6::Context& ctx);
 
     // use to draw a red circle when boids are too close
     void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(const std::vector<Boids>& boid);
-    glm::vec2 alignment(const std::vector<Boids>& boids) const;
-    glm::vec2 cohesion(const std::vector<Boids>& boids);
+    glm::vec2 separation(Boid& boid);
+    glm::vec2 alignment(const Boid& boid) const;
+    glm::vec2 cohesion(Boid& boid);
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForce(const std::vector<Boids>& boids);
-    void updatePosition(p6::Context& ctx);
+    void applySteeringForce(Boid& boid);
+    // void updatePosition(p6::Context& ctx);
 
-    void updateBoids(p6::Context& ctx, const std::vector<Boids>& boids)
+    void updateBoids(p6::Context& ctx)
     {
         float turnfactor = 0.3f;
-        updatePosition(ctx);
-        applySteeringForce(boids);
-        avoidEdges(ctx, turnfactor);
-        displayCollision(boids, ctx);
-        draw(ctx);
+        for (auto& boid : m_boids)
+        {
+            std::vector<Boid> neighbors = fillNeighbors(boid, ctx);
+            boid.updatePosition(ctx);
+            applySteeringForce(boid);
+            avoidEdges(boid, ctx, turnfactor);
+            boid.draw(ctx);
+            neighbors.clear();
+        }
     };
+
+    // friend bool operator==(const Boid& a, const Boid& b);
+    // friend bool operator!=(const Boid& a, const Boid& b);
 };

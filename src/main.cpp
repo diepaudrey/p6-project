@@ -24,8 +24,11 @@ int main(int argc, char* argv[])
 
     // Variable declaration
 
-    std::vector<Boids> boids;
-    int                nb_boids = 25;
+    std::vector<Boid> boids;
+    int               nb_boids = 25;
+
+    Boids game(boids, nb_boids);
+    game.fillBoids(ctx);
 
     float protectedRadius    = 0.1f;
     float separationStrength = 0.1f;
@@ -33,20 +36,11 @@ int main(int argc, char* argv[])
     float cohesionStrength   = 0.1f;
     float maxSpeed           = 1.2f;
 
-    for (int i = 0; i < nb_boids; i++)
-    {
-        glm::vec2 pos   = p6::random::point(ctx);
-        glm::vec2 speed = pos + p6::random::point(ctx);
-        Boids     boid(pos, speed);
-
-        boids.push_back(boid);
-    }
-
     // Declare your infinite update loop.
     ctx.update = [&]() {
         /*Dear ImGui*/
         ImGui::Begin("Settings");
-        ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
+        ImGui::SliderFloat("Protected Radius", &protectedRadius, 0.f, 2.f);
         ImGui::SliderFloat("Separation Strength", &separationStrength, 0.f, 1.f);
         ImGui::SliderFloat("Alignment Strength", &alignmentStrength, 0.f, 1.f);
         ImGui::SliderFloat("Cohesion Strength", &cohesionStrength, 0.f, 1.f);
@@ -56,16 +50,13 @@ int main(int argc, char* argv[])
 
         ctx.background(p6::NamedColor::DavySGrey);
 
-        for (auto& boid : boids)
-        {
-            boid.setProtectedRadius(protectedRadius);
-            boid.setAlignmentStrength(alignmentStrength);
-            boid.setCohesionStrength(cohesionStrength);
-            boid.setSeparationStrength(separationStrength);
-            boid.setMaxSpeed(maxSpeed);
+        game.setProtectedRadius(protectedRadius);
+        game.setAlignmentStrength(alignmentStrength);
+        game.setCohesionStrength(cohesionStrength);
+        game.setSeparationStrength(separationStrength);
+        game.setMaxSpeed(maxSpeed);
 
-            boid.updateBoids(ctx, boids);
-        }
+        game.updateBoids(ctx);
     };
 
     // Should be done last. It starts the infinite loop.
