@@ -28,9 +28,10 @@ int main(int argc, char* argv[])
     int               nb_boids = 25;
 
     float protectedRadius    = 0.1f;
-    float separationStrength = 2.f;
+    float separationStrength = 0.1f;
     float alignmentStrength  = 0.1f;
     float cohesionStrength   = 0.1f;
+    float maxSpeed           = 1.2f;
 
     for (int i = 0; i < nb_boids; i++)
     {
@@ -46,10 +47,11 @@ int main(int argc, char* argv[])
         /*Dear ImGui*/
         ImGui::Begin("Settings");
         ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
-        ImGui::SliderFloat("separationStrength", &separationStrength, 0.f, 1.f);
-        ImGui::SliderFloat("alignmentStrength", &alignmentStrength, 0.f, 1.f);
-        ImGui::SliderFloat("cohesionStrength", &cohesionStrength, 0.f, 1.f);
-        // ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
+        ImGui::SliderFloat("Separation Strength", &separationStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Alignment Strength", &alignmentStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Cohesion Strength", &cohesionStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Max Speed", &maxSpeed, 0.f, 5.f);
+        //  ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
         ImGui::End();
 
         ctx.background(p6::NamedColor::DavySGrey);
@@ -60,7 +62,7 @@ int main(int argc, char* argv[])
             boid.setAlignmentStrength(alignmentStrength);
             boid.setCohesionStrength(cohesionStrength);
             boid.setSeparationStrength(separationStrength);
-            // boid.setSpeed(speed);
+            boid.setMaxSpeed(maxSpeed);
 
             boid.update(ctx, boids);
         }
