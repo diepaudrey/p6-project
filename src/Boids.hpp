@@ -4,7 +4,7 @@
 #include "doctest/doctest.h"
 #include "p6/p6.h"
 
-class Boid {
+class Boids {
 private:
     /*Attributes*/
     glm::vec2 m_position;
@@ -18,8 +18,8 @@ private:
     float maxSpeed;
 
 public:
-    Boid() = default;
-    Boid(const glm::vec2& pos, const glm::vec2 vel)
+    Boids() = default;
+    Boids(const glm::vec2& pos, const glm::vec2 vel)
         : m_position(pos), m_speed(vel){};
 
     /*Setters for ImGui*/
@@ -64,22 +64,22 @@ public:
     void avoidEdges(const p6::Context& ctx, const float& turnfactor);
 
     // check distance between this boid and the boid in argument
-    bool isTooClose(const Boid& boid, const float& radius) const;
+    bool isTooClose(const Boids& boid, const float& radius) const;
     // fill a vector of the neighbor
 
     // use to draw a red circle when boids are too close
-    void displayCollision(const std::vector<Boid>& neighbors, p6::Context& ctx);
+    void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(const std::vector<Boid>& boid);
-    glm::vec2 alignment(const std::vector<Boid>& boids) const;
-    glm::vec2 cohesion(const std::vector<Boid>& boids);
+    glm::vec2 separation(const std::vector<Boids>& boid);
+    glm::vec2 alignment(const std::vector<Boids>& boids) const;
+    glm::vec2 cohesion(const std::vector<Boids>& boids);
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForce(const std::vector<Boid>& boids);
+    void applySteeringForce(const std::vector<Boids>& boids);
     void updatePosition(p6::Context& ctx);
 
-    void update(p6::Context& ctx, const std::vector<Boid>& boids)
+    void updateBoids(p6::Context& ctx, const std::vector<Boids>& boids)
     {
         float turnfactor = 0.3f;
         updatePosition(ctx);

@@ -4,7 +4,7 @@
 
 #define DOCTEST_CONFIG_IMPLEMENT
 #include <vector>
-#include "boid.hpp"
+#include "Boids.hpp"
 #include "doctest/doctest.h"
 
 int main(int argc, char* argv[])
@@ -24,8 +24,8 @@ int main(int argc, char* argv[])
 
     // Variable declaration
 
-    std::vector<Boid> boids;
-    int               nb_boids = 25;
+    std::vector<Boids> boids;
+    int                nb_boids = 25;
 
     float protectedRadius    = 0.1f;
     float separationStrength = 0.1f;
@@ -37,7 +37,7 @@ int main(int argc, char* argv[])
     {
         glm::vec2 pos   = p6::random::point(ctx);
         glm::vec2 speed = pos + p6::random::point(ctx);
-        Boid      boid(pos, speed);
+        Boids     boid(pos, speed);
 
         boids.push_back(boid);
     }
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
             boid.setSeparationStrength(separationStrength);
             boid.setMaxSpeed(maxSpeed);
 
-            boid.update(ctx, boids);
+            boid.updateBoids(ctx, boids);
         }
     };
 

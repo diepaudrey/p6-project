@@ -1,8 +1,8 @@
-#include "boid.hpp"
+#include "Boids.hpp"
 #include <vcruntime.h>
 #include <iterator>
 
-void Boid::draw(p6::Context& ctx)
+void Boids::draw(p6::Context& ctx)
 {
     ctx.circle(m_position, this->protectedRadius);
     ctx.fill = {1.f, 1.f, 1.f, 0.5f};
@@ -16,7 +16,7 @@ void Boid::draw(p6::Context& ctx)
     ctx.use_stroke = false;
 }
 
-void Boid::avoidEdges(const p6::Context& ctx, const float& turnfactor)
+void Boids::avoidEdges(const p6::Context& ctx, const float& turnfactor)
 {
     if (m_position.x + this->protectedRadius > ctx.aspect_ratio())
     {
@@ -37,12 +37,12 @@ void Boid::avoidEdges(const p6::Context& ctx, const float& turnfactor)
     }
 }
 
-bool Boid::isTooClose(const Boid& boid, const float& radius) const
+bool Boids::isTooClose(const Boids& boid, const float& radius) const
 {
     return glm::distance(boid.m_position, m_position) < radius && glm::distance(boid.m_position, m_position) != 0;
 }
 
-void Boid::displayCollision(const std::vector<Boid>& neighbors, p6::Context& ctx)
+void Boids::displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const
 {
     for (const auto& boid : neighbors)
         if (isTooClose(boid, protectedRadius))
@@ -53,7 +53,7 @@ void Boid::displayCollision(const std::vector<Boid>& neighbors, p6::Context& ctx
 
 /* 3 Rules of the game*/
 
-glm::vec2 Boid::separation(const std::vector<Boid>& boids)
+glm::vec2 Boids::separation(const std::vector<Boids>& boids)
 {
     glm::vec2   force(0.f, 0.f);
     const float separationRange   = 0.2f;
@@ -80,7 +80,7 @@ glm::vec2 Boid::separation(const std::vector<Boid>& boids)
     return force;
 }
 
-glm::vec2 Boid::alignment(const std::vector<Boid>& boids) const
+glm::vec2 Boids::alignment(const std::vector<Boids>& boids) const
 {
     glm::vec2 averageDirection(0.f, 0.f);
     float     alignmentRange    = 0.2f;
@@ -103,7 +103,7 @@ glm::vec2 Boid::alignment(const std::vector<Boid>& boids) const
     return averageDirection;
 }
 
-glm::vec2 Boid::cohesion(const std::vector<Boid>& boids)
+glm::vec2 Boids::cohesion(const std::vector<Boids>& boids)
 {
     glm::vec2 averageLocation(0.f, 0.f);
     float     cohesionRange     = 0.5f;
@@ -127,7 +127,7 @@ glm::vec2 Boid::cohesion(const std::vector<Boid>& boids)
     return averageLocation;
 }
 
-void Boid::applySteeringForce(const std::vector<Boid>& boids)
+void Boids::applySteeringForce(const std::vector<Boids>& boids)
 {
     m_speed += alignment(boids);
     m_speed += cohesion(boids);
@@ -135,7 +135,7 @@ void Boid::applySteeringForce(const std::vector<Boid>& boids)
     this->limitSpeed();
 }
 
-void Boid::updatePosition(p6::Context& ctx)
+void Boids::updatePosition(p6::Context& ctx)
 {
     m_position += ctx.delta_time() * m_speed;
 }
