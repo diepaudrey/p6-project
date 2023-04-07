@@ -11,11 +11,6 @@ private:
     std::vector<Boid> m_boids;
     int               m_numBoids;
 
-    // glm::vec2 m_position;
-    // glm::vec2 m_speed;
-
-    /*ImGui variables*/
-    // float protectedRadius;
     float separationStrength;
     float alignmentStrength;
     float cohesionStrength;
@@ -33,7 +28,7 @@ public:
     {
         for (auto& boid : m_boids)
         {
-            boid.protectedRadius = protecRad;
+            boid.setProtectedRadius(protecRad);
         }
     }
 
@@ -52,11 +47,11 @@ public:
         this->cohesionStrength = cohesion;
     }
 
-    void setMaxSpeed(const float& maxSpeed)
+    void setBoidsMaxSpeed(const float& maxSpeed)
     {
         for (auto& boid : m_boids)
         {
-            boid.maxSpeed = maxSpeed;
+            boid.setMaxSpeed(maxSpeed);
         }
     }
 
@@ -80,7 +75,7 @@ public:
     glm::vec2 cohesion(Boid& boid);
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForce(Boid& boid);
+    void applySteeringForces(Boid& boid);
     // void updatePosition(p6::Context& ctx);
 
     void updateBoids(p6::Context& ctx)
@@ -90,7 +85,7 @@ public:
         {
             std::vector<Boid> neighbors = fillNeighbors(boid, ctx);
             boid.updatePosition(ctx);
-            applySteeringForce(boid);
+            applySteeringForces(boid);
             avoidEdges(boid, ctx, turnfactor);
             boid.draw(ctx);
             neighbors.clear();

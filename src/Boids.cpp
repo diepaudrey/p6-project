@@ -7,7 +7,7 @@ void Boids::drawBoids(p6::Context& ctx)
     for (auto& boid : m_boids)
     {
         boid.draw(ctx);
-        ctx.circle(boid.m_position, boid.protectedRadius);
+        ctx.circle(boid.getPosition(), boid.getProtectedRadius());
         ctx.fill = {1.f, 1.f, 1.f, 0.5f};
     }
 }
@@ -26,28 +26,28 @@ void Boids::fillBoids(p6::Context& ctx)
 
 void Boids::avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor)
 {
-    if (boid.m_position.x + boid.protectedRadius > ctx.aspect_ratio())
+    if (boid.getPosition().x + boid.getProtectedRadius() > ctx.aspect_ratio())
     {
-        boid.m_speed.x -= turnfactor;
+        boid.addSpeedX(-turnfactor);
     }
-    if (boid.m_position.x - boid.protectedRadius < -ctx.aspect_ratio())
+    if (boid.getPosition().x - boid.getProtectedRadius() < -ctx.aspect_ratio())
     {
-        boid.m_speed.x += turnfactor;
+        boid.addSpeedX(turnfactor);
     }
 
-    if (boid.m_position.y + boid.protectedRadius > ctx.inverse_aspect_ratio() * 2)
+    if (boid.getPosition().y + boid.getProtectedRadius() > ctx.inverse_aspect_ratio() * 2)
     {
-        boid.m_speed.y -= turnfactor;
+        boid.addSpeedY(-turnfactor);
     }
-    if (boid.m_position.y - boid.protectedRadius < -ctx.inverse_aspect_ratio() * 2)
+    if (boid.getPosition().y - boid.getProtectedRadius() < -ctx.inverse_aspect_ratio() * 2)
     {
-        boid.m_speed.y += turnfactor;
+        boid.addSpeedY(turnfactor);
     }
 }
 
 bool Boids::isTooClose(const Boid& boid1, const Boid& boid2, const float& radius)
 {
-    return glm::distance(boid1.m_position, boid2.m_position) < radius && boid1 != boid2;
+    return glm::distance(boid1.getPosition(), boid2.getPosition()) < radius && boid1 != boid2;
 }
 
 std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx)
@@ -55,7 +55,7 @@ std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx)
     std::vector<Boid> neighbors;
     for (const auto& otherBoid : m_boids)
     {
-        if (isTooClose(boid, otherBoid, boid.protectedRadius))
+        if (isTooClose(boid, otherBoid, boid.getProtectedRadius()))
         {
             neighbors.push_back(otherBoid);
             ctx.fill = {1.f, 0.f, 0.f, 0.3f};
@@ -63,11 +63,6 @@ std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx)
     }
     return neighbors;
 }
-
-// void Boids::displayCollision(const std::vector<Boid>& neighbors, p6::Context& ctx) const
-// {
-//     ctx.fill = {1.f, 0.f, 0.f, 0.3f};
-// }
 
 /* 3 Rules of the game*/
 
@@ -82,8 +77,8 @@ glm::vec2 Boids::separation(Boid& boid)
         if (isTooClose(boid, otherBoid, separationRange))
 
         {
-            float distance = glm::distance(boid.m_position, otherBoid.m_position);
-            steeringForce += (boid.m_position - otherBoid.m_position) / distance;
+            float distance = glm::distance(boid.getPosition(), otherBoid.getPosition());
+            steeringForce += (boid.getPosition() - otherBoid.getPosition()) / distance;
             numberOfNeighbors++;
         }
     }
@@ -107,7 +102,7 @@ glm::vec2 Boids::alignment(const Boid& boid) const
     {
         if (isTooClose(boid, otherBoid, alignmentRange))
         {
-            averageDirection += otherBoid.m_speed;
+            averageDirection += otherBoid.getSpeed();
             // std::cout << "Other Boid speed  " << otherBoid.m_speed.x << " " << otherBoid.m_speed.y << std::endl;
             numberOfNeighbors++;
         }
@@ -131,7 +126,7 @@ glm::vec2 Boids::cohesion(Boid& boid)
     {
         if (isTooClose(boid, otherBoid, cohesionRange))
         {
-            averageLocation += otherBoid.m_position;
+            averageLocation += otherBoid.getPosition();
             numberOfNeighbors++;
         }
     }
@@ -139,16 +134,16 @@ glm::vec2 Boids::cohesion(Boid& boid)
     if (numberOfNeighbors != 0)
     {
         averageLocation /= numberOfNeighbors;
-        averageLocation = (averageLocation - boid.m_position) * cohesionStrength;
+        averageLocation = (averageLocation - boid.getPosition()) * cohesionStrength;
     }
 
     return averageLocation;
 }
 
-void Boids::applySteeringForce(Boid& boid)
+void Boids::applySteeringForces(Boid& boid)
 {
-    boid.m_speed += alignment(boid);
-    boid.m_speed += cohesion(boid);
-    boid.m_speed += separation(boid);
+    boid.applyForce(alignment(boid));
+    boid.applyForce(cohesion(boid));
+    boid.applyForce(separation(boid));
     boid.limitSpeed();
 }

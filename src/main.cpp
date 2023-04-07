@@ -54,7 +54,7 @@ int main(int argc, char* argv[])
         game.setAlignmentStrength(alignmentStrength);
         game.setCohesionStrength(cohesionStrength);
         game.setSeparationStrength(separationStrength);
-        game.setMaxSpeed(maxSpeed);
+        game.setBoidsMaxSpeed(maxSpeed);
 
         game.updateBoids(ctx);
     };

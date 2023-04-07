@@ -13,7 +13,7 @@ private:
     float protectedRadius;
 
 public:
-    friend class Boids;
+    // friend class Boids;
 
     Boid() = default;
     Boid(const glm::vec2& pos, const glm::vec2 vel)
@@ -28,9 +28,35 @@ public:
         return m_speed;
     }
 
+    float getProtectedRadius() const
+    {
+        return protectedRadius;
+    }
+
+    float getMaxSpeed() const
+    {
+        return maxSpeed;
+    }
+
+    void addSpeedX(const float speed)
+    {
+        m_speed.x += speed;
+    }
+
+    void addSpeedY(const float speed)
+    {
+        m_speed.y += speed;
+    }
+
+    void setProtectedRadius(const float protRad)
+    {
+        protectedRadius = protRad;
+    }
+
     void draw(p6::Context& ctx);
     void updatePosition(p6::Context& ctx);
     void setMaxSpeed(const float& speed);
+    void applyForce(const glm::vec2 force);
 
     // limit the speed
     void limitSpeed();

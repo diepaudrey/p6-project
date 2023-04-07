@@ -24,6 +24,11 @@ void Boid::setMaxSpeed(const float& speed)
     this->maxSpeed = speed;
 }
 
+void Boid::applyForce(const glm::vec2 force)
+{
+    this->m_speed += force;
+}
+
 void Boid::limitSpeed()
 {
     if (glm::length(m_speed) > maxSpeed)
