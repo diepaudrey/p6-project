@@ -96,7 +96,4 @@ public:
             neighbors.clear();
         }
     };
-
-    // friend bool operator==(const Boid& a, const Boid& b);
-    // friend bool operator!=(const Boid& a, const Boid& b);
 };
