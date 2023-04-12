@@ -70,9 +70,9 @@ public:
     void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(Boid& boid);
+    glm::vec2 separation(const Boid& boid) const;
     glm::vec2 alignment(const Boid& boid) const;
-    glm::vec2 cohesion(Boid& boid);
+    glm::vec2 cohesion(const Boid& boid) const;
 
     // apply the 3 rules(separation, alignment, cohesion)
     void applySteeringForces(Boid& boid);

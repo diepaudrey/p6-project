@@ -35,11 +35,11 @@ void Boids::avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfact
         boid.addSpeedX(turnfactor);
     }
 
-    if (boid.getPosition().y + boid.getProtectedRadius() > ctx.inverse_aspect_ratio() * 2)
+    if (boid.getPosition().y + boid.getProtectedRadius() > 1)
     {
         boid.addSpeedY(-turnfactor);
     }
-    if (boid.getPosition().y - boid.getProtectedRadius() < -ctx.inverse_aspect_ratio() * 2)
+    if (boid.getPosition().y - boid.getProtectedRadius() < -1)
     {
         boid.addSpeedY(turnfactor);
     }
@@ -66,7 +66,7 @@ std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx)
 
 /* 3 Rules of the game*/
 
-glm::vec2 Boids::separation(Boid& boid)
+glm::vec2 Boids::separation(const Boid& boid) const
 {
     glm::vec2   steeringForce(0.f, 0.f);
     const float separationRange   = 0.3f;
@@ -116,7 +116,7 @@ glm::vec2 Boids::alignment(const Boid& boid) const
     return averageDirection;
 }
 
-glm::vec2 Boids::cohesion(Boid& boid)
+glm::vec2 Boids::cohesion(const Boid& boid) const
 {
     glm::vec2 averageLocation(0.f, 0.f);
     float     cohesionRange     = 0.5f;
