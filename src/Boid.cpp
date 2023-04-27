@@ -1,6 +1,6 @@
 #include "Boid.hpp"
 
-void Boid::draw(p6::Context& ctx)
+void Boid::draw(p6::Context& ctx, const float& protectedRadius)
 {
     ctx.circle(m_position, protectedRadius);
     ctx.fill = {1.f, 1.f, 1.f, 0.5f};
@@ -19,17 +19,12 @@ void Boid::updatePosition(p6::Context& ctx)
     m_position += ctx.delta_time() * m_speed;
 }
 
-void Boid::setMaxSpeed(const float& speed)
-{
-    this->maxSpeed = speed;
-}
-
 void Boid::applyForce(const glm::vec2 force)
 {
     this->m_speed += force;
 }
 
-void Boid::limitSpeed()
+void Boid::limitSpeed(const float& maxSpeed)
 {
     if (glm::length(m_speed) > maxSpeed)
     {

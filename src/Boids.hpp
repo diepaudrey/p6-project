@@ -5,6 +5,25 @@
 #include "doctest/doctest.h"
 #include "p6/p6.h"
 
+struct BoidsParameters {
+    float protectedRadius;
+    float separationStrength;
+    float alignmentStrength;
+    float cohesionStrength;
+    float maxSpeed;
+
+    void updateBoidsParam()
+    {
+        ImGui::Begin("Settings");
+        ImGui::SliderFloat("Protected Radius", &this->protectedRadius, 0.f, 3.f);
+        ImGui::SliderFloat("Separation Strength", &this->separationStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Alignment Strength", &this->alignmentStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Cohesion Strength", &this->cohesionStrength, 0.f, 1.f);
+        ImGui::SliderFloat("Max Speed", &this->maxSpeed, 0.1f, 10.f);
+        ImGui::End();
+    }
+};
+
 class Boids {
 private:
     /*Attributes*/
@@ -18,77 +37,33 @@ private:
 public:
     Boids() = default;
 
-    Boids(const std::vector<Boid>& boids, const int& numBoids)
+    Boids(const std::vector<Boid>& boids, const int& numBoids, BoidsParameters& boidParam)
         : m_boids(boids), m_numBoids(numBoids){};
 
     void fillBoids(p6::Context& ctx);
 
-    /*Setters for ImGui*/
-    void setProtectedRadius(const float& protecRad)
-    {
-        for (auto& boid : m_boids)
-        {
-            boid.setProtectedRadius(protecRad);
-        }
-    }
-
-    void setSeparationStrength(const float& separation)
-    {
-        this->separationStrength = separation;
-    }
-
-    void setAlignmentStrength(const float& alignment)
-    {
-        this->alignmentStrength = alignment;
-    }
-
-    void setCohesionStrength(const float& cohesion)
-    {
-        this->cohesionStrength = cohesion;
-    }
-
-    void setBoidsMaxSpeed(const float& maxSpeed)
-    {
-        for (auto& boid : m_boids)
-        {
-            boid.setMaxSpeed(maxSpeed);
-        }
-    }
-
     // draw the boid
-    void drawBoids(p6::Context& ctx);
+    void drawBoids(p6::Context& ctx, BoidsParameters& boidParam);
 
     // Help the boids to avoid edges
-    void avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor);
+    void avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor, BoidsParameters& boidParam);
 
     // check distance between this boid and the boid in argument
     static bool isTooClose(const Boid& boid1, const Boid& boid2, const float& radius);
     // fill a vector of the neighbor
-    std::vector<Boid> fillNeighbors(const Boid& boid, p6::Context& ctx);
+    std::vector<Boid> fillNeighbors(const Boid& boid, p6::Context& ctx, BoidsParameters& boidParam);
 
     // use to draw a red circle when boids are too close
     void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(const Boid& boid) const;
-    glm::vec2 alignment(const Boid& boid) const;
-    glm::vec2 cohesion(const Boid& boid) const;
+    glm::vec2 separation(const Boid& boid, BoidsParameters& boidParam) const;
+    glm::vec2 alignment(const Boid& boid, BoidsParameters& boidParam) const;
+    glm::vec2 cohesion(const Boid& boid, BoidsParameters& boidParam) const;
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForces(Boid& boid);
-    // void updatePosition(p6::Context& ctx);
+    void applySteeringForces(Boid& boid, BoidsParameters& boidParam);
 
-    void updateBoids(p6::Context& ctx)
-    {
-        float turnfactor = 0.3f;
-        for (auto& boid : m_boids)
-        {
-            std::vector<Boid> neighbors = fillNeighbors(boid, ctx);
-            boid.updatePosition(ctx);
-            applySteeringForces(boid);
-            avoidEdges(boid, ctx, turnfactor);
-            boid.draw(ctx);
-            neighbors.clear();
-        }
-    };
+    // update boids' position, direction
+    void updateBoids(p6::Context& ctx, BoidsParameters& boidParam);
 };

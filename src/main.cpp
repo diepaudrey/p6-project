@@ -23,40 +23,23 @@ int main(int argc, char* argv[])
     ctx.maximize_window();
 
     // Variable declaration
-
     std::vector<Boid> boids;
     int               nb_boids = 25;
 
-    Boids game(boids, nb_boids);
-    game.fillBoids(ctx);
+    BoidsParameters boidsParam;
+    boidsParam.protectedRadius    = 0.1f;
+    boidsParam.separationStrength = 0.1f;
+    boidsParam.alignmentStrength  = 0.1f;
+    boidsParam.cohesionStrength   = 0.1f;
+    boidsParam.maxSpeed           = 1.2f;
 
-    float protectedRadius    = 0.1f;
-    float separationStrength = 0.1f;
-    float alignmentStrength  = 0.1f;
-    float cohesionStrength   = 0.1f;
-    float maxSpeed           = 1.2f;
+    Boids game(boids, nb_boids, boidsParam);
+    game.fillBoids(ctx);
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        /*Dear ImGui*/
-        ImGui::Begin("Settings");
-        ImGui::SliderFloat("Protected Radius", &protectedRadius, 0.f, 2.f);
-        ImGui::SliderFloat("Separation Strength", &separationStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Alignment Strength", &alignmentStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Cohesion Strength", &cohesionStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Max Speed", &maxSpeed, 0.f, 5.f);
-        //  ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
-        ImGui::End();
-
         ctx.background(p6::NamedColor::DavySGrey);
-
-        game.setProtectedRadius(protectedRadius);
-        game.setAlignmentStrength(alignmentStrength);
-        game.setCohesionStrength(cohesionStrength);
-        game.setSeparationStrength(separationStrength);
-        game.setBoidsMaxSpeed(maxSpeed);
-
-        game.updateBoids(ctx);
+        game.updateBoids(ctx, boidsParam);
     };
 
     // Should be done last. It starts the infinite loop.
