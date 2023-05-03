@@ -32,6 +32,7 @@ int main(int argc, char* argv[])
     boidsParam.alignmentStrength  = 0.1f;
     boidsParam.cohesionStrength   = 0.1f;
     boidsParam.maxSpeed           = 1.2f;
+    boidsParam.visualRange        = 0.3f;
 
     Boids game(boids, nb_boids, boidsParam);
     game.fillBoids(ctx);

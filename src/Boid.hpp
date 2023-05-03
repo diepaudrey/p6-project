@@ -23,19 +23,10 @@ public:
         return m_speed;
     }
 
-    void addSpeedX(const float speed)
-    {
-        m_speed.x += speed;
-    }
-
-    void addSpeedY(const float speed)
-    {
-        m_speed.y += speed;
-    }
-
-    void draw(p6::Context& ctx, const float& protectedRadius);
+    void draw(p6::Context& ctx, const float& protectedRadius, const float& visualRange);
     void updatePosition(p6::Context& ctx);
     void applyForce(const glm::vec2 force);
+    void avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor, const float& protectedRadius);
 
     // limit the speed
     void limitSpeed(const float& maxSpeed);

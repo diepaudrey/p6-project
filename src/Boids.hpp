@@ -11,11 +11,13 @@ struct BoidsParameters {
     float alignmentStrength;
     float cohesionStrength;
     float maxSpeed;
+    float visualRange;
 
     void updateBoidsParam()
     {
         ImGui::Begin("Settings");
         ImGui::SliderFloat("Protected Radius", &this->protectedRadius, 0.f, 3.f);
+        ImGui::SliderFloat("Visual Range", &this->visualRange, 0.f, 3.f);
         ImGui::SliderFloat("Separation Strength", &this->separationStrength, 0.f, 1.f);
         ImGui::SliderFloat("Alignment Strength", &this->alignmentStrength, 0.f, 1.f);
         ImGui::SliderFloat("Cohesion Strength", &this->cohesionStrength, 0.f, 1.f);
@@ -34,19 +36,9 @@ private:
     float alignmentStrength;
     float cohesionStrength;
 
-public:
-    Boids() = default;
-
-    Boids(const std::vector<Boid>& boids, const int& numBoids, BoidsParameters& boidParam)
-        : m_boids(boids), m_numBoids(numBoids){};
-
-    void fillBoids(p6::Context& ctx);
-
+    /*Methods*/
     // draw the boid
     void drawBoids(p6::Context& ctx, BoidsParameters& boidParam);
-
-    // Help the boids to avoid edges
-    void avoidEdges(Boid& boid, const p6::Context& ctx, const float& turnfactor, BoidsParameters& boidParam);
 
     // check distance between this boid and the boid in argument
     static bool isTooClose(const Boid& boid1, const Boid& boid2, const float& radius);
@@ -57,12 +49,22 @@ public:
     void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(const Boid& boid, BoidsParameters& boidParam) const;
-    glm::vec2 alignment(const Boid& boid, BoidsParameters& boidParam) const;
-    glm::vec2 cohesion(const Boid& boid, BoidsParameters& boidParam) const;
+    glm::vec2 separation(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
+    glm::vec2 alignment(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
+    glm::vec2 cohesion(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForces(Boid& boid, BoidsParameters& boidParam);
+    void applySteeringForces(Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
+
+public:
+    Boids() = default;
+
+    // constructor
+    Boids(const std::vector<Boid>& boids, const int& numBoids, BoidsParameters& boidParam)
+        : m_boids(boids), m_numBoids(numBoids){};
+
+    // initialize m_boids
+    void fillBoids(p6::Context& ctx);
 
     // update boids' position, direction
     void updateBoids(p6::Context& ctx, BoidsParameters& boidParam);
