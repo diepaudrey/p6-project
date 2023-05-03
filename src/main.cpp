@@ -23,49 +23,24 @@ int main(int argc, char* argv[])
     ctx.maximize_window();
 
     // Variable declaration
+    std::vector<Boid> boids;
+    int               nb_boids = 25;
 
-    std::vector<Boids> boids;
-    int                nb_boids = 25;
+    BoidsParameters boidsParam;
+    boidsParam.protectedRadius    = 0.1f;
+    boidsParam.separationStrength = 0.1f;
+    boidsParam.alignmentStrength  = 0.1f;
+    boidsParam.cohesionStrength   = 0.1f;
+    boidsParam.maxSpeed           = 1.2f;
+    boidsParam.visualRange        = 0.3f;
 
-    float protectedRadius    = 0.1f;
-    float separationStrength = 0.1f;
-    float alignmentStrength  = 0.1f;
-    float cohesionStrength   = 0.1f;
-    float maxSpeed           = 1.2f;
-
-    for (int i = 0; i < nb_boids; i++)
-    {
-        glm::vec2 pos   = p6::random::point(ctx);
-        glm::vec2 speed = pos + p6::random::point(ctx);
-        Boids     boid(pos, speed);
-
-        boids.push_back(boid);
-    }
+    Boids game(boids, nb_boids, boidsParam);
+    game.fillBoids(ctx);
 
     // Declare your infinite update loop.
     ctx.update = [&]() {
-        /*Dear ImGui*/
-        ImGui::Begin("Settings");
-        ImGui::SliderFloat("ProtectedRadius", &protectedRadius, 0.f, 2.f);
-        ImGui::SliderFloat("Separation Strength", &separationStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Alignment Strength", &alignmentStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Cohesion Strength", &cohesionStrength, 0.f, 1.f);
-        ImGui::SliderFloat("Max Speed", &maxSpeed, 0.f, 5.f);
-        //  ImGui::SliderFloat("speed", &speed, 0.f, 10.f);
-        ImGui::End();
-
         ctx.background(p6::NamedColor::DavySGrey);
-
-        for (auto& boid : boids)
-        {
-            boid.setProtectedRadius(protectedRadius);
-            boid.setAlignmentStrength(alignmentStrength);
-            boid.setCohesionStrength(cohesionStrength);
-            boid.setSeparationStrength(separationStrength);
-            boid.setMaxSpeed(maxSpeed);
-
-            boid.updateBoids(ctx, boids);
-        }
+        game.updateBoids(ctx, boidsParam);
     };
 
     // Should be done last. It starts the infinite loop.
