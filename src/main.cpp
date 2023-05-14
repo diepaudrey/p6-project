@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     std::vector<Boid> boids;
     int               nb_boids = 25;
 
-    BoidsParameters boidsParam;
+    BoidsParameters boidsParam{};
     boidsParam.protectedRadius    = 0.1f;
     boidsParam.separationStrength = 0.1f;
     boidsParam.alignmentStrength  = 0.1f;
@@ -34,7 +34,7 @@ int main(int argc, char* argv[])
     boidsParam.maxSpeed           = 1.2f;
     boidsParam.visualRange        = 0.3f;
 
-    Boids game(boids, nb_boids, boidsParam);
+    Boids game(boids, nb_boids);
     game.fillBoids(ctx);
 
     // Declare your infinite update loop.

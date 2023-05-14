@@ -27,7 +27,7 @@ bool Boids::isTooClose(const Boid& boid1, const Boid& boid2, const float& radius
     return glm::distance(boid1.getPosition(), boid2.getPosition()) < radius && boid1 != boid2;
 }
 
-std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx, BoidsParameters& boidParam)
+std::vector<Boid> Boids::fillNeighbors(const Boid& boid, BoidsParameters& boidParam)
 {
     std::vector<Boid> neighbors;
     for (const auto& otherBoid : m_boids)
@@ -42,7 +42,7 @@ std::vector<Boid> Boids::fillNeighbors(const Boid& boid, p6::Context& ctx, Boids
 
 /* 3 Rules of the game*/
 
-glm::vec2 Boids::separation(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const
+glm::vec2 Boids::separation(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors)
 {
     glm::vec2 steeringForce(0.f, 0.f);
     int       numberOfNeighbors = 0;
@@ -67,7 +67,7 @@ glm::vec2 Boids::separation(const Boid& boid, BoidsParameters& boidParam, const 
     return steeringForce;
 }
 
-glm::vec2 Boids::alignment(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const
+glm::vec2 Boids::alignment(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors)
 {
     glm::vec2 averageDirection(0.f, 0.f);
     int       numberOfNeighbors = 0;
@@ -89,7 +89,7 @@ glm::vec2 Boids::alignment(const Boid& boid, BoidsParameters& boidParam, const s
     return averageDirection;
 }
 
-glm::vec2 Boids::cohesion(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const
+glm::vec2 Boids::cohesion(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors)
 {
     glm::vec2 averageLocation(0.f, 0.f);
     int       numberOfNeighbors = 0;
@@ -126,7 +126,7 @@ void Boids::updateBoids(p6::Context& ctx, BoidsParameters& boidParam)
     boidParam.updateBoidsParam();
     for (auto& boid : m_boids)
     {
-        std::vector<Boid> neighbors = fillNeighbors(boid, ctx, boidParam);
+        std::vector<Boid> neighbors = fillNeighbors(boid, boidParam);
         boid.updatePosition(ctx);
         applySteeringForces(boid, boidParam, neighbors);
         boid.avoidEdges(boid, ctx, turnfactor, boidParam.protectedRadius);

@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdlib>
+#include <utility>
 #include <vector>
 #include "Boid.hpp"
 #include "doctest/doctest.h"
@@ -30,11 +31,7 @@ class Boids {
 private:
     /*Attributes*/
     std::vector<Boid> m_boids;
-    int               m_numBoids;
-
-    float separationStrength;
-    float alignmentStrength;
-    float cohesionStrength;
+    int               m_numBoids{};
 
     /*Methods*/
     // draw the boid
@@ -43,25 +40,25 @@ private:
     // check distance between this boid and the boid in argument
     static bool isTooClose(const Boid& boid1, const Boid& boid2, const float& radius);
     // fill a vector of the neighbor
-    std::vector<Boid> fillNeighbors(const Boid& boid, p6::Context& ctx, BoidsParameters& boidParam);
+    std::vector<Boid> fillNeighbors(const Boid& boid, BoidsParameters& boidParam);
 
     // use to draw a red circle when boids are too close
     void displayCollision(const std::vector<Boids>& neighbors, p6::Context& ctx) const;
 
     /*3 rules*/
-    glm::vec2 separation(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
-    glm::vec2 alignment(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
-    glm::vec2 cohesion(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors) const;
+    static glm::vec2 separation(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
+    static glm::vec2 alignment(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
+    static glm::vec2 cohesion(const Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
 
     // apply the 3 rules(separation, alignment, cohesion)
-    void applySteeringForces(Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
+    static void applySteeringForces(Boid& boid, BoidsParameters& boidParam, const std::vector<Boid>& neighbors);
 
 public:
     Boids() = default;
 
     // constructor
-    Boids(const std::vector<Boid>& boids, const int& numBoids, BoidsParameters& boidParam)
-        : m_boids(boids), m_numBoids(numBoids){};
+    Boids(std::vector<Boid> boids, const int& numBoids)
+        : m_boids(std::move(boids)), m_numBoids(numBoids){};
 
     // initialize m_boids
     void fillBoids(p6::Context& ctx);
